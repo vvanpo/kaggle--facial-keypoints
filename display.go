@@ -33,22 +33,22 @@ func main() {
 	if err != nil {
 		log.Fatal("Unable to create window:", err)
 	}
-	win.SetTitle("Simple Example")
+	win.SetTitle("Facial Keypoints - display")
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
 	// Create a new label widget to show in the window.
-	l, err := gtk.LabelNew("Hello, gotk3!")
+	image, err := gtk.ImageNewFromFile("avg-face.jpg")
 	if err != nil {
-		log.Fatal("Unable to create label:", err)
+		log.Fatal("Unable to create image:", err)
 	}
 
 	// Add the label to the window.
-	win.Add(l)
+	win.Add(image)
 
 	// Set the default window size.
-	win.SetDefaultSize(800, 600)
+	//win.SetDefaultSize(600, 400)
 
 	// Recursively show all widgets contained in this window.
 	win.ShowAll()
