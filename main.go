@@ -8,6 +8,8 @@ import (
     "image"
     _ "image/png"
     _ "image/jpeg"
+    "github.com/conformal/gotk3/gdk"
+    "github.com/conformal/gotk3/gtk"
 )
 
 func main() {
@@ -23,7 +25,23 @@ func main() {
             log.Print("Failed to decode image ", file)
             continue
         }
-        fmt.Printf("x: %d -> %d\ny: %d -> %d\n", img.Bounds().Min.X, img.Bounds().Max.X, img.Bounds().Min.Y, img.Bounds().Max.Y)
+        width := img.Bounds().Max.X - img.Bounds().Min.X
+        height := img.Bounds().Max.Y - img.Bounds().Min.Y
+        fmt.Printf("(%d, %d)\n", width, height)
+        // Initialize a Pixbuf to copy img into
+        pb, err := gdk.PixbufNew(gdk.COLORSPACE_RGB, false, 8, width, height)
+        if err != nil {
+            log.Print("Failed to create a pixbuf for image ", file)
+            continue
+        }
+        // Initialize GTK window
+        gtk.Init(nil)
+        win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
+        win.Connect("destroy", func() { gtk.MainQuit() })
+        i, err := gtk.ImageNewFromPixbuf(pb)
+        win.Add(i)
+        win.ShowAll()
+        gtk.Main()
     }
 
 }
