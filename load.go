@@ -19,7 +19,7 @@ func init() {
     if err != nil {
         log.Fatal("Cannot load configuration file ", os.Args[1])
     }
-    err = yaml.Unmarshal(bytes, config)
+    err = yaml.Unmarshal(bytes, &config)
     if err != nil {
         log.Print(err)
         log.Fatal("Cannot parse configuration file")
