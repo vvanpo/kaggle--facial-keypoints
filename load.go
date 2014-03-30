@@ -2,53 +2,47 @@
 package main
 
 import (
-    "os"
     "io"
-    "io/ioutil"
     "log"
     "image"
     "strings"
     "strconv"
     "encoding/csv"
-    "gopkg.in/yaml.v1"
 )
 
 var config map[string]string
 
-func init() {
-    if len(os.Args) != 2 {
-        log.Fatal("Need to specify configuration file")
+type format int
+
+const (
+    None format = iota
+    PGM format = iota
+)
+
+func testFormat(r *csv.Reader) (f format) {
+    h, _ := r.Read()
+    if len(h) < 2 { return }
+    switch {
+        case h[len(h) - 1] == "Image": f = PGM
+        default: f = None
     }
-    bytes, err := ioutil.ReadFile(os.Args[1])
-    if err != nil {
-        log.Fatal("Cannot load configuration file ", os.Args[1])
-    }
-    err = yaml.Unmarshal(bytes, &config)
-    if err != nil {
-        log.Print(err)
-        log.Fatal("Cannot parse configuration file")
-    }
+    return
 }
 
-func loadTest(out chan image.Image) {
+func loadInput(in io.Reader, out chan image.Image) {
     defer close(out)
-    f, err := os.Open(config["test.csv"])
-    if err != nil {
-        log.Print(err)
-        return
-    }
-    test := csv.NewReader(f)
-    test.TrimLeadingSpace = true
+    r := csv.NewReader(in)
+    r.TrimLeadingSpace = true
+    fmt := testFormat(r)
+    if fmt == None { return }
     for {
-        record, err := test.Read()
-        if err == io.EOF {
-            break
-        } else if err != nil {
+        rec, err := r.Read()
+        if err != nil {
+            if err == io.EOF { break }
             log.Print(err)
             return
         }
-        if record[1] == "Image" { continue }
-        img, err := decodePGM(record[1])
+        img, err := decodePGM(rec[len(rec) - 1])
         if err != nil {
             log.Print(err)
             return

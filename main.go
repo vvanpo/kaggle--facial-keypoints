@@ -2,6 +2,7 @@
 package main
 
 import (
+    "os"
     "log"
     "image"
     _ "image/png"
@@ -10,9 +11,11 @@ import (
 
 func main() {
     img := make(chan image.Image)
-    go loadTest(img)
+    go loadInput(os.Stdin, img)
     for {
-        err := displayImage(<-img)
+        i, ok := <-img
+        if !ok { break }
+        err := displayImage(i)
         if err != nil {
             log.Fatal(err)
         }
