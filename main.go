@@ -4,13 +4,11 @@ package main
 import (
     "os"
     "log"
-    "image"
-    _ "image/png"
-    _ "image/jpeg"
+    "image/draw"
 )
 
 func main() {
-    img := make(chan image.Image)
+    img := make(chan draw.Image)
     go loadInput(os.Stdin, img)
     for {
         i, ok := <-img
