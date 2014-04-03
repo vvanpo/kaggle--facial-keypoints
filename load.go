@@ -6,11 +6,11 @@ import (
     "log"
     "errors"
     "image"
-    "image/color"
     "image/draw"
     "strings"
     "strconv"
     "encoding/csv"
+    "github.com/disintegration/imaging"
 )
 
 func decodeFunc(h []string) (func(rec []string) (draw.Image, error)) {
@@ -23,7 +23,7 @@ func decodeFunc(h []string) (func(rec []string) (draw.Image, error)) {
             img := image.NewRGBA(b)
             draw.Draw(img, b, src, b.Min, draw.Src)
             for i := 0; i < len(rec) / 2; i++ {
-                x, err := strconv.ParseFloat(rec[2*i], 64)
+/*                x, err := strconv.ParseFloat(rec[2*i], 64)
                 if err != nil {
                     log.Print(err)
                     continue
@@ -33,9 +33,11 @@ func decodeFunc(h []string) (func(rec []string) (draw.Image, error)) {
                     log.Print(err)
                     continue
                 }
-                img.Set(int(x + 0.5), int(y + 0.5), color.RGBA{0xff, 0, 0, 0xff})
+                img.Set(int(x + 0.5), int(y + 0.5), color.RGBA{0xff, 0, 0, 0xff})*/
             }
-            return img, nil
+            // overlayPoints(
+            i := imaging.Resize(img, 500, 0, imaging.Lanczos)
+            return i, nil
         }
     }
     return nil
@@ -84,3 +86,6 @@ func decodePGM(rec []string) (draw.Image, error) {
     return img, nil
 }
 
+func overlayPoints(x []float64, y []float64, img draw.Image) {
+    return
+}
